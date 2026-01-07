@@ -1,12 +1,15 @@
 <script setup>
-  import TaskDetails from './components/TaskDetails.vue';
+  import { storeToRefs } from 'pinia';
+import TaskDetails from './components/TaskDetails.vue';
 import TaskForm from './components/TaskForm.vue';
   import { useTaskStore } from './store/TaskStore';
   import { ref } from 'vue';
 
   const TaskStore = useTaskStore();
   const filter = ref('all')
-
+  TaskStore.getTasks();
+  // so we use them as refs - example - name used to be TaskStore.name
+ const { getTasks, isLoading, tasks, totalCount, favsCount, favs, name } =  storeToRefs(TaskStore)
 </script>
 
 
@@ -15,7 +18,7 @@ import TaskForm from './components/TaskForm.vue';
   <main>
     <header>
       <img src="./assets//pinia-logo.svg" alt="Pinia Logo">
-      <h1>{{ TaskStore.name }} <br> With Pinia </h1>
+      <h1>{{ name }} <br> With Pinia </h1>
     </header>
     <div>
       <TaskForm />
@@ -28,6 +31,10 @@ import TaskForm from './components/TaskForm.vue';
         Favorites
       </button>
     </nav>
+
+    <div v-if="TaskStore.isLoading">
+      Loading tasks ......
+    </div>
     <!-- task list -->
     <div class="grid justify-items-center" v-if="filter==='all'" >
       <h1>All Tasks</h1>
@@ -43,6 +50,7 @@ import TaskForm from './components/TaskForm.vue';
         <TaskDetails :task="task" />
       </div>
     </div>
+      <button @click="TaskStore.$reset">RESET STORE</button>
    
   </main>
 </template>
